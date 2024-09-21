@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatsApp Contact</title>
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: #f0f0f0;
+        }
+        .whatsapp-icon {
+            width: 60px;
+            height: 60px;
+            background-color: #25D366;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            animation: bounce 2s infinite;
+            transition: transform 0.3s;
+        }
+        .whatsapp-icon:hover {
+            transform: scale(1.1);
+        }
+        .whatsapp-icon img {
+            width: 30px;
+        }
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-10px);
+            }
+            60% {
+                transform: translateY(-5px);
+            }
+        }
+        input {
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <input type="text" id="phone-input" placeholder="Enter your phone number" />
+
+    <div class="whatsapp-icon" onclick="openWhatsApp()" aria-label="Chat with Gradienteinfotainment Ltd on WhatsApp">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp">
+    </div>
+
+    <script>
+        function generateMessage() {
+            const companyName = "Gradienteinfotainment Ltd";
+            const services = [
+                "website development",
+                "digital marketing",
+                "mobile app development",
+                "graphic design",
+                "SEO services"
+            ];
+            const serviceRequested = services[Math.floor(Math.random() * services.length)];
+            return `Hello ${companyName}, I need more information regarding the ${serviceRequested} services that you offer. Thank you!`;
+        }
+
+        async function openWhatsApp() {
+            const phoneNumber = document.getElementById('phone-input').value; // Get user input
+            const message = generateMessage(); // Generate the message
+
+            if (!phoneNumber) {
+                alert('Please enter your phone number.');
+                return;
+            }
+
+            try {
+                const response = await fetch('http://localhost:5000/api/chats', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ phoneNumber, message }),
+                });
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+                window.open(url, '_blank'); // Open in a new tab
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Failed to send message. Please check the console for more details.');
+            }
+        }
+    </script>
+
+</body>
+</html>
